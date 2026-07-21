@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button, Paper, Typography, Box, FormControl, FormLabel, Radio, RadioGroup, FormControlLabel } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
+import './App.css';
 
 function TaskForm({ onSave, initialTask }) {
   const [title, setTitle] = useState(initialTask?.title || '');
@@ -147,7 +148,7 @@ function TaskForm({ onSave, initialTask }) {
             }
           }}
         />
-        <FormControl>
+        <FormControl className="priority-field">
           <FormLabel id="task-priority-label">Priority</FormLabel>
           <RadioGroup
             aria-labelledby="task-priority-label"
@@ -160,14 +161,7 @@ function TaskForm({ onSave, initialTask }) {
               <FormControlLabel
                 key={priorityOption}
                 value={priorityOption}
-                control={
-                  <Radio
-                    sx={{
-                      color: '#7A7A7A',
-                      '&.Mui-checked': { color: '#07F2E6' }
-                    }}
-                  />
-                }
+                control={<Radio />}
                 label={priorityOption}
               />
             ))}
