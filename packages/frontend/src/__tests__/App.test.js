@@ -73,6 +73,7 @@ describe('TODO App', () => {
     });
     expect(screen.getByText('TODO App')).toBeInTheDocument();
     expect(screen.getByTestId('submit-task')).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'P3' })).toBeChecked();
       // Removed 'Tasks' assertion, as the header is 'TODO App'
   });
 
@@ -88,7 +89,7 @@ describe('TODO App', () => {
 
   test('adds a new task', async () => {
     let tasks = [
-      { id: 1, title: 'Test Task 1', description: 'Desc 1', due_date: '2025-09-30', completed: 0 },
+      { id: 1, title: 'Test Task 1', description: 'Desc 1', due_date: '2025-09-30', priority: 'P3', completed: 0 },
       { id: 2, title: 'Test Task 2', description: 'Desc 2', due_date: '2025-10-01', completed: 1 },
     ];
     server.use(
@@ -96,12 +97,13 @@ describe('TODO App', () => {
         return res(ctx.status(200), ctx.json(tasks));
       }),
       rest.post('/api/tasks', (req, res, ctx) => {
-        const { title, description } = req.body;
+        const { title, description, priority } = req.body;
         const newTask = {
           id: 3,
           title,
           description: description || '',
           due_date: req.body.due_date || null,
+          priority,
           completed: 0,
         };
         tasks = [...tasks, newTask];
@@ -117,10 +119,12 @@ describe('TODO App', () => {
     });
     await user.type(screen.getByTestId('title-input'), 'New Test Task');
     await user.type(screen.getByTestId('description-input'), 'Task description');
+    await user.click(screen.getByRole('radio', { name: 'P1' }));
     await user.click(screen.getByTestId('submit-task'));
     await waitFor(() => {
       expect(screen.getByText(/New Test Task/i)).toBeInTheDocument();
     });
+    expect(tasks[2].priority).toBe('P1');
   });
 
   test('handles API error', async () => {

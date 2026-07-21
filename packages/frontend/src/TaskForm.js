@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Paper, Typography, Box } from '@mui/material';
+import { TextField, Button, Paper, Typography, Box, FormControl, FormLabel, Radio, RadioGroup, FormControlLabel } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 
@@ -7,6 +7,7 @@ function TaskForm({ onSave, initialTask }) {
   const [title, setTitle] = useState(initialTask?.title || '');
   const [description, setDescription] = useState(initialTask?.description || '');
   const [dueDate, setDueDate] = useState(initialTask?.due_date || '');
+  const [priority, setPriority] = useState(initialTask?.priority || 'P3');
   const [error, setError] = useState(null);
 
   // Helper to normalize date string to YYYY-MM-DD format
@@ -30,10 +31,12 @@ function TaskForm({ onSave, initialTask }) {
       setTitle(initialTask.title || '');
       setDescription(initialTask.description || '');
       setDueDate(normalizeDateString(initialTask.due_date));
+      setPriority(initialTask.priority || 'P3');
     } else {
       setTitle('');
       setDescription('');
       setDueDate('');
+      setPriority('P3');
     }
   }, [initialTask]);
 
@@ -44,10 +47,11 @@ function TaskForm({ onSave, initialTask }) {
       return;
     }
     setError(null);
-    await onSave({ title, description, due_date: dueDate });
+    await onSave({ title, description, due_date: dueDate, priority });
     setTitle('');
     setDescription('');
     setDueDate('');
+    setPriority('P3');
   };
 
   return (
@@ -143,6 +147,32 @@ function TaskForm({ onSave, initialTask }) {
             }
           }}
         />
+        <FormControl>
+          <FormLabel id="task-priority-label">Priority</FormLabel>
+          <RadioGroup
+            aria-labelledby="task-priority-label"
+            name="task-priority"
+            row
+            value={priority}
+            onChange={event => setPriority(event.target.value)}
+          >
+            {['P1', 'P2', 'P3'].map(priorityOption => (
+              <FormControlLabel
+                key={priorityOption}
+                value={priorityOption}
+                control={
+                  <Radio
+                    sx={{
+                      color: '#7A7A7A',
+                      '&.Mui-checked': { color: '#07F2E6' }
+                    }}
+                  />
+                }
+                label={priorityOption}
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
         {error && <Typography color="error" sx={{ fontWeight: 500, fontSize: '0.875rem' }}>{error}</Typography>}
         <Box display="flex" gap={2}>
           <Button 

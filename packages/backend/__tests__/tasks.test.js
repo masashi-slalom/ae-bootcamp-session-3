@@ -17,6 +17,7 @@ describe('Tasks API', () => {
     expect(res.body.title).toBe('Test Task');
     expect(res.body.description).toBe('A test task');
     expect(res.body.due_date).toBe('2025-09-30');
+    expect(res.body.priority).toBe('P3');
     expect(res.body.completed).toBe(0);
     taskId = res.body.id;
   });
@@ -26,6 +27,22 @@ describe('Tasks API', () => {
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
+  });
+
+  it('should store a valid task priority', async () => {
+    const res = await request(app)
+      .post('/api/tasks')
+      .send({ title: 'High priority task', priority: 'P1' });
+    expect(res.status).toBe(201);
+    expect(res.body.priority).toBe('P1');
+  });
+
+  it('should reject an invalid task priority', async () => {
+    const res = await request(app)
+      .post('/api/tasks')
+      .send({ title: 'Invalid priority task', priority: 'P4' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Priority must be P1, P2, or P3');
   });
 
   it('should get a single task by id', async () => {
